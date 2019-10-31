@@ -9,6 +9,29 @@ pipeline {
       label "maven-skopeo-agent"
       cloud "openshift"
       inheritFrom "maven"
+
+      // https://blog.openshift.com/decrease-maven-build-times-openshift-pipelines-using-persistent-volume-claim/
+
+      /*
+echo "apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: maven-slave-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: gp2
+  volumeMode: Filesystem" | oc create -f -
+
+      */
+
+      volumes: [
+        persistentVolumeClaim(claimName: "maven-slave-pvc", mountPath: "/home/jenkins/.m2")
+      ]
+
       containerTemplate {
         name "jnlp"
         image "image-registry.openshift-image-registry.svc:5000/${GUID}-jenkins/jenkins-agent-appdev:latest"
