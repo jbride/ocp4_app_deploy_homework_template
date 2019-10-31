@@ -57,7 +57,7 @@ items:
     source:
       type: "Git"
       git:
-        uri: "https://homework-gitea.apps.shared.na.openshift.opentlc.com/jbride-redhat.com/ocp4_app_deploy_homework_template.git"
+        uri: "${REPO}"
     strategy:
       type: "JenkinsPipeline"
       jenkinsPipelineStrategy:
