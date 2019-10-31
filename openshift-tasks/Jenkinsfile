@@ -48,8 +48,8 @@ pipeline {
         echo "Print Vars:  devProject = ${devProject} "
         echo "Print Vars:  prodProject = ${prodProject} "
         echo "Print Vars:  jenkinsBuildNumber = ${jenkinsBuildNumber} "
-        sh "mvn -v"
-        sh "oc whoami"
+        sh "source /usr/local/bin/scl_enable && mvn -v"
+        sh "source /usr/local/bin/scl_enable && oc whoami"
       }
     }
 
