@@ -137,7 +137,7 @@ pipeline {
           script {
             echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
             openshift.withProject("${devProject}") {
-                openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+                openshift.selector("bc", "tasks").startBuild("--from-file=./target/${GUID}-tasks.war", "--wait=true")
                 openshift.tag("tasks:latest", "tasks:${devTag}")
             }
 
@@ -157,7 +157,7 @@ pipeline {
             //      (Re-) Create ConfigMap
             //      Make sure the application is running and ready before proceeding
 
-            openshift.withCluster() {
+        openshift.withCluster() {
           openshift.withProject("${devProject}") {
             openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
 
