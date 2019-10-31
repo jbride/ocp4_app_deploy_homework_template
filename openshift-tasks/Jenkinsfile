@@ -88,7 +88,7 @@ pipeline {
           script {
             echo "Building version ${devTag}"
 
-            //TBD: Execute the Maven Build
+            sh "${mvnCmd} clean package -DskipTests=true"
 
           }
         }
@@ -101,7 +101,7 @@ pipeline {
         dir('openshift-tasks') {
           echo "Running Unit Tests"
 
-        // TBD: Execute Unit Tests
+          sh "${mvnCmd} test"
         }
       }
     }
@@ -126,7 +126,7 @@ pipeline {
         dir('openshift-tasks') {
           echo "Publish to Nexus"
 
-          // TBD: Publish to Nexus
+          sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://homework-nexus.gpte-hw-cicd.svc.cluster.local:8081/repository/releases
         }
       }
     }
@@ -136,9 +136,10 @@ pipeline {
         dir('openshift-tasks') {
           script {
             echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
-            // TBD: Build Image (binary build), tag Image
-            //      Make sure the image name is correct in the tag!
-
+            openshift.withProject("${devProject}") {
+                openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+                openshift.tag("tasks:latest", "tasks:${devTag}")
+            }
 
           }
         }
@@ -155,6 +156,34 @@ pipeline {
             //      Set Image, Set VERSION
             //      (Re-) Create ConfigMap
             //      Make sure the application is running and ready before proceeding
+
+            openshift.withCluster() {
+          openshift.withProject("${devProject}") {
+            openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
+
+            openshift.set("env", "dc/tasks", "VERSION=\"${devTag} (tasks-dev)\"")
+
+
+            // Update the Config Map which contains the users for the Tasks application
+            // (just in case the properties files changed in the latest commit)
+            openshift.selector('configmap', 'tasks-config').delete()
+            def configmap = openshift.create('configmap', 'tasks-config', '--from-file=./configuration/application-users.properties', '--from-file=./configuration/application-roles.properties' )
+
+            // Deploy the development application.
+            openshift.selector("dc", "tasks").rollout().latest();
+
+            // Wait for application to be deployed
+            def dc = openshift.selector("dc", "tasks").object()
+            def dc_version = dc.status.latestVersion
+            def rc = openshift.selector("rc", "tasks-${dc_version}").object()
+
+            echo "Waiting for ReplicationController tasks-${dc_version} to be ready"
+            while (rc.spec.replicas != rc.status.readyReplicas) {
+              sleep 5
+              rc = openshift.selector("rc", "tasks-${dc_version}").object()
+                }
+              }
+            }
 
           }
         }
