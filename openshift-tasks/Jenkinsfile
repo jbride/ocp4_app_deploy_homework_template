@@ -12,11 +12,9 @@ pipeline {
 
       // https://blog.openshift.com/decrease-maven-build-times-openshift-pipelines-using-persistent-volume-claim/
       // https://gist.github.com/jbride/1428573c36b43efe84f5611ed1d669a5
-
-      volumes: [
-        persistentVolumeClaim(claimName: "maven-slave-pvc", mountPath: "/home/jenkins/.m2")
-      ]
-
+      //volumes: [
+        //persistentVolumeClaim(claimName: "maven-slave-pvc", mountPath: "/home/jenkins/.m2")
+      //]
       containerTemplate {
         name "jnlp"
         image "image-registry.openshift-image-registry.svc:5000/${GUID}-jenkins/jenkins-agent-appdev:latest"
