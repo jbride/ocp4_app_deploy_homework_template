@@ -78,8 +78,8 @@ pipeline {
     // Build the Tasks Application in the directory 'openshift-tasks'
     stage('Build war') {
       steps {
-          echo "Building version ${devTag}"
           script {
+            echo "Building version ${devTag}"
 
             //TBD: Execute the Maven Build
 
@@ -121,9 +121,9 @@ pipeline {
     // Build the OpenShift Image in OpenShift and tag it.
     stage('Build and Tag OpenShift Image') {
       steps {
-          echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
 
           script {
+            echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
             // TBD: Build Image (binary build), tag Image
             //      Make sure the image name is correct in the tag!
 
@@ -134,8 +134,8 @@ pipeline {
     // Deploy the built image to the Development Environment.
     stage('Deploy to Dev') {
       steps {
-          echo "Deploying container image to Development Project"
           script {
+            echo "Deploying container image to Development Project"
 
             // TBD: Deploy to development Project
             //      Set Image, Set VERSION
@@ -149,8 +149,8 @@ pipeline {
     // Copy Image to Nexus Container Registry
     stage('Copy Image to Nexus Container Registry') {
       steps {
-        echo "Copy image to Nexus Container Registry"
         script {
+          echo "Copy image to Nexus Container Registry"
 
           // TBD: Copy image to Nexus container registry
 
@@ -165,6 +165,7 @@ pipeline {
     stage('Blue/Green Production Deployment') {
       steps {
         script {
+          echo "Blue/Green Production Deployment"
 
           // TBD: Determine which application is active
           //      Set Image, Set VERSION
@@ -178,8 +179,8 @@ pipeline {
 
     stage('Switch over to new Version') {
       steps{
-        echo "Switching Production application to ${destApp}."
         script {
+          echo "Switching Production application to ${destApp}."
           // TBD: Execute switch
           //      Hint: sleep 5 seconds after the switch
           //            for the route to be fully switched over
