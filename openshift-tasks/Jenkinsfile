@@ -60,7 +60,6 @@ pipeline {
       steps {
         checkout scm
 
-        dir('openshift-tasks') {
           script {
             def pom = readMavenPom file: 'pom.xml'
             def version = pom.version
@@ -73,39 +72,33 @@ pipeline {
             // Patch Source artifactId to include GUID
             sh "sed -i 's/GUID/${GUID}/g' ./pom.xml"
           }
-        }
       }
     }
 
     // Build the Tasks Application in the directory 'openshift-tasks'
     stage('Build war') {
       steps {
-        dir('openshift-tasks') {
           echo "Building version ${devTag}"
           script {
 
             //TBD: Execute the Maven Build
 
           }
-        }
       }
     }
 
     // Using Maven run the unit tests
     stage('Unit Tests') {
       steps {
-        dir('openshift-tasks') {
           echo "Running Unit Tests"
 
         // TBD: Execute Unit Tests
 
-        }
       }
     }
     // Using Maven call SonarQube for Code Analysis
     stage('Code Analysis') {
       steps {
-        dir('openshift-tasks') {
           script {
             echo "Running Code Analysis"
 
@@ -114,24 +107,20 @@ pipeline {
             //      Your project version should be ${devTag}
 
           }
-        }
       }
     }
     // Publish the built war file to Nexus
     stage('Publish to Nexus') {
       steps {
-        dir('openshift-tasks') {
           echo "Publish to Nexus"
 
           // TBD: Publish to Nexus
 
-        }
       }
     }
     // Build the OpenShift Image in OpenShift and tag it.
     stage('Build and Tag OpenShift Image') {
       steps {
-        dir('openshift-tasks') {
           echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
 
           script {
@@ -140,13 +129,11 @@ pipeline {
 
 
           }
-        }
       }
     }
     // Deploy the built image to the Development Environment.
     stage('Deploy to Dev') {
       steps {
-        dir('openshift-tasks') {
           echo "Deploying container image to Development Project"
           script {
 
@@ -156,7 +143,6 @@ pipeline {
             //      Make sure the application is running and ready before proceeding
 
           }
-        }
       }
     }
 
