@@ -39,6 +39,22 @@ pipeline {
     activeApp   = ""
   }
   stages {
+
+    stage('Print Vars') {
+      steps {
+        echo "Print Vars:  Jenkins BUILD_NUMBER = ${jenkinsBuildNumber} "
+        echo "Print Vars:  sourceUrl = ${sourceUrl} "
+        echo "Print Vars:  mvnCmd = ${mvnCmd} "
+        echo "Print Vars:  nexusHostUrl = ${nexusHostUrl} "
+        echo "Print Vars:  devProject = ${devProject} "
+        echo "Print Vars:  prodProject = ${prodProject} "
+        echo "Print Vars:  majorReleaseNumber = ${majorReleaseNumber} "
+        echo "Print Vars:  jenkinsBuildNumber = ${jenkinsBuildNumber} "
+        sh "mvn -v"
+        sh "oc whoami"
+      }
+    }
+
     // Checkout Source Code.
     stage('Checkout Source') {
       steps {
