@@ -219,9 +219,10 @@ pipeline {
     stage('Blue/Green Production Deployment') {
 
       steps {
+        echo "Blue/Green Production Deployment"
         script {
-          echo "Blue/Green Production Deployment"
-
+          openshift.withCluster() {
+            openshift.withProject("${prodProject}") {
                 activeApp = openshift.selector("route", "tasks").object().spec.to.name
                 if (activeApp == "tasks-green") {
                   destApp = "tasks-blue"
@@ -253,6 +254,8 @@ pipeline {
                   sleep 5
                   rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
                 }
+            }
+          }
         }
       }
     }
