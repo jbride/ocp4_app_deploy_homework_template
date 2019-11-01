@@ -64,7 +64,7 @@ items:
         jenkinsfilePath: openshift-tasks/Jenkinsfile
         env:
         - name: GUID
-          value: "${GUID}
+          value: "${GUID}"
 kind: List
 metadata: []" | oc apply -f - -n ${GUID}-jenkins
 
