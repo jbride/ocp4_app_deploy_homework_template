@@ -45,6 +45,7 @@ pipeline {
     // Blue-Green Settings
     destApp     = "tasks-green"
     activeApp   = ""
+
   }
   stages {
 
@@ -214,10 +215,9 @@ pipeline {
 
     // Blue/Green Deployment into Production
     // -------------------------------------
-    def destApp   = "tasks-green"
-    def activeApp = ""
 
     stage('Blue/Green Production Deployment') {
+
       steps {
         script {
           echo "Blue/Green Production Deployment"
