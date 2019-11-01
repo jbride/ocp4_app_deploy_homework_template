@@ -219,6 +219,7 @@ pipeline {
     stage('Blue/Green Production Deployment') {
 
       steps {
+       dir('openshift-tasks') {
         echo "Blue/Green Production Deployment"
         script {
           openshift.withCluster() {
@@ -242,7 +243,7 @@ pipeline {
 
                 // Update Config Map and change config files changed in the source
                 openshift.selector("configmap", "${destApp}-config").delete()
-                def configmap = openshift.create("configmap", "${destApp}-config", "--from-file=./openshift-tasks/configuration/application-users.properties", "--from-file=./openshift-tasks/configuration/application-roles.properties" )
+                def configmap = openshift.create("configmap", "${destApp}-config", "--from-file=./configuration/application-users.properties", "--from-file=./configuration/application-roles.properties" )
                 echo "configmap = " + configmap
 
                 // Deploy the inactive application.
@@ -260,6 +261,7 @@ pipeline {
             }
           }
         }
+       }
       }
     }
 
