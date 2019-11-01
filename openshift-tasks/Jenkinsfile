@@ -196,14 +196,14 @@ pipeline {
       steps {
           echo "Copy image to Nexus Container Registry"
 
-          sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false \
+          script {
+            sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false \
               --src-creds openshift:\$(oc whoami -t) \
               --dest-creds admin:redhat \
               docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${devProject}/${GUID}-tasks:${devTag} \
               docker://homework-nexus-registry.gpte-hw-cicd.svc.cluster.local:5000/${devProject}/${GUID}-tasks:${devTag}"
 
 
-          script {
             openshift.withCluster() {
               openshift.withProject("${prodProject}") {
                 openshift.tag("${devProject}/${GUID}-tasks:${devTag}", "${devProject}/${GUID}-tasks:${prodTag}")
@@ -238,9 +238,12 @@ pipeline {
                 dc.spec.template.spec.containers[0].image="image-registry.openshift-image-registry.svc:5000/${devProject}/${GUID}-tasks:${prodTag}"
                 openshift.apply(dc)
 
-                // Update Config Map in change config files changed in the source
+                echo "Updated image on prod deployment config"
+
+                // Update Config Map and change config files changed in the source
                 openshift.selector("configmap", "${destApp}-config").delete()
-                def configmap = openshift.create("configmap", "${destApp}-config", "--from-file=./configuration/application-users.properties", "--from-file=./configuration/application-roles.properties" )
+                def configmap = openshift.create("configmap", "${destApp}-config", "--from-file=./openshift-tasks/configuration/application-users.properties", "--from-file=./openshift-tasks/configuration/application-roles.properties" )
+                echo "configmap = " + configmap
 
                 // Deploy the inactive application.
                 openshift.selector("dc", "${destApp}").rollout().latest();
