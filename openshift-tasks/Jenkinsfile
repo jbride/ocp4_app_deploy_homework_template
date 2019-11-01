@@ -134,11 +134,12 @@ pipeline {
     stage('Build and Tag OpenShift Image') {
       steps {
           echo "Building OpenShift container image ${imageName}:${devTag} in project ${devProject}."
+          sh "ls -lt target"
           script {
             openshift.withCluster() {
               openshift.withProject("${devProject}") {
                 openshift.selector("bc", "tasks").startBuild("--from-file=./target/${GUID}-tasks.war", "--wait=true")
-                openshift.tag("tasks:latest", "tasks:${devTag}")
+                openshift.tag("${GUID}-tasks:latest", "${GUID}-tasks:${devTag}")
               }
             }
           }
