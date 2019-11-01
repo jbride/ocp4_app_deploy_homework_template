@@ -200,7 +200,7 @@ pipeline {
               --src-creds openshift:\$(oc whoami -t) \
               --dest-creds admin:redhat \
               docker://image-registry.openshift-image-registry.svc.cluster.local:5000/${devProject}/${GUID}-tasks:${devTag} \
-              docker://nexus-registry.gpte-hw-cicd.svc.cluster.local:5000/${devProject}/${GUID}-tasks:${devTag}"
+              https://homework-nexus-registry.gpte-hw-cicd.svc.cluster.local:5000/${devProject}/${GUID}-tasks:${devTag}"
 
 
           script {
